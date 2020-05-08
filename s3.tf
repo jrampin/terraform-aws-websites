@@ -1,7 +1,6 @@
 resource "aws_s3_bucket" "www_domain_bucket" {
   bucket = "www.${var.domain_name}"
   acl    = "private"
-  #policy = "${file("s3-policy.json")}"
 
   force_destroy = true
 
