@@ -1,6 +1,7 @@
 resource "aws_s3_bucket" "www_domain_bucket" {
   bucket = "www.${var.domain_name}"
   acl    = "private"
+  #policy = "${file("s3-policy.json")}"
 
   force_destroy = true
 
@@ -10,8 +11,39 @@ resource "aws_s3_bucket" "www_domain_bucket" {
   }
 }
 
+# www_bucket policy for CDN #
+
+data "aws_iam_policy_document" "s3_policy" {
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.www_domain_bucket.arn}/*"]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.www_origin_access_identity.iam_arn]
+    }
+  }
+
+  # statement {
+  #   actions   = ["s3:ListBucket"]
+  #   resources = [aws_s3_bucket.www_domain_bucket.arn]
+
+  #   principals {
+  #     type        = "AWS"
+  #     identifiers = [aws_cloudfront_origin_access_identity.www_origin_access_identity.iam_arn]
+  #   }
+  # }
+}
+
+resource "aws_s3_bucket_policy" "allow_cdn_www_bucket" {
+  bucket = aws_s3_bucket.www_domain_bucket.id
+  policy = data.aws_iam_policy_document.s3_policy.json
+}
+
+###
+
 resource "aws_s3_bucket" "naked_domain_redirect" {
-  bucket = var.domain_name
+  bucket = var.domain_name  
 
   force_destroy = true
 
