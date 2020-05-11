@@ -17,6 +17,6 @@ This code creates the following resources:
 
 ### Architecture
 
-Here's a neat mindmap designed with CloudCraft for what Terraform will build
+Here's a neat mindmap of what Terraform will build
 
 ![Architecture](images/architecture.png)
