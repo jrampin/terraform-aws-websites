@@ -107,7 +107,7 @@ resource "aws_cloudfront_distribution" "naked_cdn" {
     aws_s3_bucket.naked_domain_redirect
   ]
   enabled             = true
-  default_root_object = "index.html"
+  default_root_object = ""
   aliases = [
     var.domain_name
   ]
