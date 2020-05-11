@@ -19,4 +19,4 @@ This code creates the following resources:
 
 Here's a neat mindmap designed with CloudCraft for what Terraform will build
 
-    ![Architecture](images/architecture.png)
+![Architecture](images/architecture.png)
