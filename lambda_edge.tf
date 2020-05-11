@@ -1,9 +1,11 @@
+# --- Zip lambda@edge file 
 data "archive_file" "folder_index_redirect_zip" {
   type        = "zip"
   output_path = "folder_index_redirect.js.zip"
   source_file = "folder_index_redirect.js"
 }
 
+# --- Add lambda execution role_policy
 resource "aws_iam_role_policy" "lambda_execution" {
   name_prefix = "terraform-lambda-execution-policy-"
   role        = aws_iam_role.lambda_execution.id
@@ -26,6 +28,7 @@ resource "aws_iam_role_policy" "lambda_execution" {
 EOF
 }
 
+# --- Add lambda execution role
 resource "aws_iam_role" "lambda_execution" {
   name_prefix        = "terraform-lambda-execution-role-"
   description        = "Managed by Terraform"
@@ -49,6 +52,7 @@ resource "aws_iam_role" "lambda_execution" {
 EOF
 }
 
+# --- Add lambda function file
 resource "aws_lambda_function" "folder_index_redirect" {
   description      = "Managed by Terraform"
   filename         = "folder_index_redirect.js.zip"
@@ -59,5 +63,4 @@ resource "aws_lambda_function" "folder_index_redirect" {
   publish          = true
   role             = aws_iam_role.lambda_execution.arn
   runtime          = "nodejs12.x"
-
 }

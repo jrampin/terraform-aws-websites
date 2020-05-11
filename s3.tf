@@ -1,3 +1,4 @@
+# --- Add www s3 bucket
 resource "aws_s3_bucket" "www_domain_bucket" {
   bucket = "www.${var.domain_name}"
   acl    = "private"
@@ -10,8 +11,7 @@ resource "aws_s3_bucket" "www_domain_bucket" {
   }
 }
 
-# www_bucket policy for CDN #
-
+# --- Get data/policy that allows CDN access to www bucket
 data "aws_iam_policy_document" "s3_policy" {
   statement {
     actions   = ["s3:GetObject"]
@@ -22,25 +22,15 @@ data "aws_iam_policy_document" "s3_policy" {
       identifiers = [aws_cloudfront_origin_access_identity.www_origin_access_identity.iam_arn]
     }
   }
-
-  # statement {
-  #   actions   = ["s3:ListBucket"]
-  #   resources = [aws_s3_bucket.www_domain_bucket.arn]
-
-  #   principals {
-  #     type        = "AWS"
-  #     identifiers = [aws_cloudfront_origin_access_identity.www_origin_access_identity.iam_arn]
-  #   }
-  # }
 }
 
+# --- Add policy that allows CDN access to www bucket
 resource "aws_s3_bucket_policy" "allow_cdn_www_bucket" {
   bucket = aws_s3_bucket.www_domain_bucket.id
   policy = data.aws_iam_policy_document.s3_policy.json
 }
 
-###
-
+# --- Add redirect bucket
 resource "aws_s3_bucket" "naked_domain_redirect" {
   bucket = var.domain_name  
 
@@ -51,6 +41,7 @@ resource "aws_s3_bucket" "naked_domain_redirect" {
   }
 }
 
+# --- Add alias www.eit-demo.com to CDN
 resource "aws_route53_record" "www_alias_record" {
   zone_id = data.aws_route53_zone.default.zone_id
 
@@ -64,6 +55,7 @@ resource "aws_route53_record" "www_alias_record" {
   }
 }
 
+# --- Add alias eit-demo.com to CDN
 resource "aws_route53_record" "naked_alias_record" {
   zone_id = data.aws_route53_zone.default.zone_id
 
