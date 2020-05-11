@@ -62,6 +62,13 @@ resource "aws_cloudfront_distribution" "cdn" {
     target_origin_id = "S3-www.${var.domain_name}"
     compress         = var.enable_gzip
 
+    # Lambda@edge 
+    lambda_function_association {
+      event_type   = "origin-request"
+      lambda_arn   = aws_lambda_function.folder_index_redirect.qualified_arn
+      include_body = false
+    }
+
     forwarded_values {
       query_string = false
 
@@ -135,6 +142,13 @@ resource "aws_cloudfront_distribution" "naked_cdn" {
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "S3-${var.domain_name}"
     compress         = var.enable_gzip
+
+    # Lambda@edge 
+    lambda_function_association {
+      event_type   = "origin-request"
+      lambda_arn   = aws_lambda_function.folder_index_redirect.qualified_arn
+      include_body = false
+    }
 
     forwarded_values {
       query_string = false
